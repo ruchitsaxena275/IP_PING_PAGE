@@ -1,37 +1,40 @@
 import streamlit as st
-import requests
-from bs4 import BeautifulSoup
-import pandas as pd
 
-# List of all 80 inverter IPs in order.
+# IP list as provided
 inverter_ips = [
     '10.22.250.2','10.22.250.3','10.22.250.4','10.22.250.5',
-    # ... Add the rest from your list ...
-    '10.22.250.214'
+    '10.22.250.13','10.22.250.14','10.22.250.15','10.22.250.16',
+    '10.22.250.24','10.22.250.25','10.22.250.26','10.22.250.27',
+    '10.22.250.35','10.22.250.36','10.22.250.37','10.22.250.38',
+    '10.22.250.46','10.22.250.47','10.22.250.48','10.22.250.49',
+    '10.22.250.57','10.22.250.58','10.22.250.59','10.22.250.60',
+    '10.22.250.68','10.22.250.69','10.22.250.70','10.22.250.71',
+    '10.22.250.79','10.22.250.80','10.22.250.81','10.22.250.82',
+    '10.22.250.90','10.22.250.91','10.22.250.92','10.22.250.93',
+    '10.22.250.101','10.22.250.102','10.22.250.103','10.22.250.104',
+    '10.22.250.112','10.22.250.113','10.22.250.114','10.22.250.115',
+    '10.22.250.123','10.22.250.124','10.22.250.125','10.22.250.126',
+    '10.22.250.134','10.22.250.135','10.22.250.136','10.22.250.137',
+    '10.22.250.145','10.22.250.146','10.22.250.147','10.22.250.148',
+    '10.22.250.156','10.22.250.157','10.22.250.158','10.22.250.159',
+    '10.22.250.167','10.22.250.168','10.22.250.169','10.22.250.170',
+    '10.22.250.178','10.22.250.179','10.22.250.180','10.22.250.181',
+    '10.22.250.189','10.22.250.190','10.22.250.191','10.22.250.192',
+    '10.22.250.200','10.22.250.201','10.22.250.202','10.22.250.203',
+    '10.22.250.211','10.22.250.212','10.22.250.213','10.22.250.214'
 ]
 
-def get_export_value(ip):
-    try:
-        url = f"http://{ip}"  # Adjust if a specific port or path is needed, e.g. /main or /status
-        response = requests.get(url, timeout=3)
-        response.raise_for_status()
-        soup = BeautifulSoup(response.text, 'html.parser')
-        # The export value is in a div with class 'label_top_num'
-        result = soup.find('span', {'class': 'label_top_num'})
-        return result.text.strip() if result else 'N/A'
-    except Exception as e:
-        return 'Error'
+st.title("Inverter Export Value Dashboard")
 
-# Organize the results
-results = []
+# Structure the inverter info for display
+data = []
 for i, ip in enumerate(inverter_ips):
-    itc = f"ITC {i//4 + 1}"
-    inverter = f"Inverter {i%4 + 1}"
-    export_value = get_export_value(ip)
-    results.append({"ITC": itc, "Inverter": inverter, "IP": ip, "Export Value": export_value})
+    itc = f"ITC-{i // 4 + 1}"
+    inv = f"Inverter-{i % 4 + 1}"
+    # Use a user input field for manual entry if no backend available
+    value = st.text_input(f"Enter export value for {itc} {inv} ({ip})")
+    data.append({"ITC": itc, "Inverter": inv, "IP": ip, "Export Value": value})
 
-# Create DataFrame and Streamlit UI
-df = pd.DataFrame(results)
-
-st.title('Inverter Export Value Dashboard')
-st.dataframe(df)
+# Display as table
+st.write("### Export Values Table")
+st.table(data)
